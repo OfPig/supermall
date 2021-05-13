@@ -6,12 +6,14 @@
       </div>
     </nav-bar>
     <home-swiper :banners="banners"></home-swiper>
+    <recommend-view :recommends="recommends"></recommend-view>
   </div>
 </template>
 
 <script>
 import NavBar from "components/common/navbar/NavBar";
 import HomeSwiper from "./childComps/HomeSwiper";
+import RecommendView from "./childComps/RecommendView";
 import {getHomeMultidata} from "network/home";
 
 
@@ -25,15 +27,12 @@ export default {
   },
   components: {
     NavBar,
-    HomeSwiper
+    HomeSwiper,
+    RecommendView
   },
   created() {
     getHomeMultidata().then(res => {
       this.banners = res.data.data.banner.list
-      /*this.banners[0].image = "assets/img/xjw/4.jpg"
-      this.banners[1].image = "assets/img/xjw/5.jpg"
-      this.banners[2].image = "assets/img/xjw/6.jpg"
-      this.banners[3].image = "assets/img/xjw/7.jpg"*/
       this.recommends = res.data.data.recommend.list
     })
   }
