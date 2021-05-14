@@ -12,7 +12,7 @@
 <script>
 export default {
   name: "RecommendView",
-  props:{
+  props: {
     recommends:{
       type:Array,
       default() {
@@ -27,17 +27,17 @@ export default {
 .recommend{
   display: flex;
   width: 100%;
-  text-align: center;
   font-size: 12px;
+  text-align: center;
   padding: 10px 0 20px;
   border-bottom: 10px solid #eee;
 }
 .recommend-item{
   flex: 1;
 }
-.recommend-item img{
-  width: 65px;
-  height: 65px;
+.recommend img{
+  height: 70px;
+  width: 70px;
   margin-bottom: 10px;
 }
 </style>
