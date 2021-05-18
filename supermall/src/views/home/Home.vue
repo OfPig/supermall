@@ -34,7 +34,7 @@ import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backtop/BackTop";
 
 import {getHomeMultidata, getHomeGoods} from "network/home";
-import {debounce} from "common/utils";
+import {itemListenerMixin} from "common/mixin";
 
 export default {
   name: "Home",
@@ -51,7 +51,7 @@ export default {
       isShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
-      saveY: 0
+      saveY: 0,
     }
   },
   computed: {
@@ -76,21 +76,16 @@ export default {
     this.getHomeGoods('sell')
 
   },
-  mounted() {
-    //防抖动
-    const refresh = debounce(this.$refs.scroll.refresh)
-    //监听item中图片加载完成
-    this.$bus.$on('itemImageLoad', () => {
-      refresh()
-    })
-
-  },
+  mixins:[itemListenerMixin],
   activated() {
     this.$refs.scroll.ToTop(0, this.saveY, 0)
     this.$refs.scroll.refresh()
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY()
+
+    //取消全局监听
+    this.$bus.$off('itemImageLoad',this.itemImgListener)
   },
   methods: {
     /*网络请求*/
