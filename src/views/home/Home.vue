@@ -31,10 +31,9 @@ import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/content/tabController/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 import Scroll from "components/common/scroll/Scroll";
-import BackTop from "components/content/backtop/BackTop";
 
 import {getHomeMultidata, getHomeGoods} from "network/home";
-import {debounce} from "common/utils";
+import {itemListenerMixin,backTop} from "common/mixin";
 
 export default {
   name: "Home",
@@ -48,7 +47,6 @@ export default {
         'sell': {page: 0, list: []}
       },
       currentType: 'pop',
-      isShow: false,
       tabOffsetTop: 0,
       isTabFixed: false,
       saveY: 0
@@ -66,7 +64,6 @@ export default {
     NavBar,
     GoodsList,
     Scroll,
-    BackTop,
     TabControl
   },
   created() {
@@ -76,21 +73,15 @@ export default {
     this.getHomeGoods('sell')
 
   },
-  mounted() {
-    //防抖动
-    const refresh = debounce(this.$refs.scroll.refresh)
-    //监听item中图片加载完成
-    this.$bus.$on('itemImageLoad', () => {
-      refresh()
-    })
-
-  },
+  mixins:[itemListenerMixin,backTop],
   activated() {
     this.$refs.scroll.ToTop(0, this.saveY, 0)
     this.$refs.scroll.refresh()
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY()
+    //取消全局监听
+    this.$bus.$off('itemImageLoad',this.itemImgListener)
   },
   methods: {
     /*网络请求*/
@@ -134,18 +125,16 @@ export default {
       this.$refs.tabControl2.currentIndex = index
     },
 
-    //回到顶部
-    backClick() {
-      this.$refs.scroll.ToTop(0, 0)
-    },
     //获取显示回顶按钮位置
     getPosition(position) {
       //判断BackTop是否显示
-      this.isShow = position.y < -1500;
+      this.showBar(position)
 
       //TabControl吸顶
       this.isTabFixed = (-position.y) > this.tabOffsetTop
     },
+
+
 
     //加载更多数据
     LoadMore() {
