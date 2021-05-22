@@ -1,6 +1,6 @@
 <template>
   <div id="detail">
-    <detail-bottom-bar @addCart="addCart"></detail-bottom-bar>
+    <detail-bottom-bar @addCart="addToCart"></detail-bottom-bar>
     <detail-nar-bar class="detail-nav" @titleClick="titleClick" ref="nav"></detail-nar-bar>
     <scroll class="content" ref="scroll" @scroll="getPosition" :probeType="probeType">
       <detail-swiper :top-images="topImages"></detail-swiper>
@@ -13,6 +13,7 @@
     </scroll>
     <!--组件不能直接监听，要使用native让它变成原生监听-->
     <back-top v-show="isShow" @click.native="backClick"></back-top>
+    <toast :message="message" :show="show"></toast>
   </div>
 </template>
 
@@ -27,10 +28,12 @@ import DetailParamInfo from "./detailComps/DetailParamInfo";
 import DetailComment from "./detailComps/DetailCommentInfo";
 import GoodsList from "../../components/content/goods/GoodsList";
 import DetailBottomBar from "./detailComps/DetailBottomBar";
+import Toast from "components/common/toast/Toast";
 
 import {getDetail, GoodsInfo, Shop, GoodsParam, getRecommend} from "network/detail";
 import {itemListenerMixin,backTop} from "common/mixin";
 import {debounce} from "common/utils";
+import {mapActions} from 'vuex'
 
 export default {
   name: "Detail",
@@ -44,7 +47,8 @@ export default {
     DetailComment,
     GoodsList,
     DetailBottomBar,
-    Scroll
+    Scroll,
+    Toast
   },
   data() {
     return {
@@ -61,6 +65,8 @@ export default {
       probeType: 3,
       index: 0,
       isShow: false,
+      show:false,
+      message:''
     }
   },
   created() {
@@ -81,6 +87,7 @@ export default {
     this.$bus.$off('itemImageLoad', this.itemImgListener)
   },
   methods: {
+    ...mapActions(['addCart']),
     //获取网络请求数据
     getDetail() {
       getDetail(this.iid).then(res => {
@@ -138,7 +145,7 @@ export default {
       //判断BackTop是否显示
       this.showBar(position)
     },
-    addCart(){
+    addToCart(){
       //购物车需要展示的信息
       const product = {}
       product.image = this.topImages[0]
@@ -146,7 +153,16 @@ export default {
       product.desc = this.goods.desc
       product.price = this.goods.realPrice;
       product.iid = this.iid
-      this.$store.dispatch('addCart',product)
+      this.addCart(product).then(res=>{
+        setTimeout(()=>{
+          this.message = res
+          this.show = true
+        },300)
+
+        setTimeout(()=>{
+          this.show = false
+        },1000)
+      })
     }
   }
 }

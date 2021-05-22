@@ -1,4 +1,4 @@
-import {ADD_COUNTER, ADD_PRODUCT, UPDATE_CHECK} from './mutation-types'
+import {ADD_COUNTER, ADD_PRODUCT, UPDATE_CHECK, SELECT_ALL} from './mutation-types'
 
 export default {
   [ADD_COUNTER](state, payload) {
@@ -13,5 +13,10 @@ export default {
       return item.iid == payload.iid
     })
     state.cartList[index].checked = !state.cartList[index].checked
+  },
+  [SELECT_ALL](state, payload) {
+    state.cartList.forEach((item) => {
+      item.checked = !payload
+    })
   }
 }

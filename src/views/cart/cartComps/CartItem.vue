@@ -1,7 +1,7 @@
 <template>
-  <div id="shop-item">
+  <div id="shop-item" @click="checkClick">
     <div class="item-selector">
-      <check-button :isChecked="product.checked" @click.native="checkClick"></check-button>
+      <check-button :isChecked="product.checked"></check-button>
     </div>
     <div class="item-img">
       <img :src="product.image" alt="商品图片">
@@ -36,7 +36,6 @@ export default {
   methods:{
     checkClick(){
       this.$store.commit('updateCheck',this.product)
-      //this.product.checked = !this.product.checked
     }
   }
 }
